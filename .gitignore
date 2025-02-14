@@ -2,3 +2,4 @@ __pycache__/
 swanlog/
 model_device_info.json
 .idea/
+train/

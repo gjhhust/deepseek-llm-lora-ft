@@ -10,8 +10,8 @@ huggingface-cli download chaiting/conversation-02 --repo-type dataset --local-di
 python finetune-multi-args.py \
     --model_name_or_path /root/model/deepseek-ai/deepseek-llm-7b-base \
     --output_dir ./train \
-    --experiment_name chai-epoch-10_base \
-    --train_file /root/cleaned_session-02_complex_quality.jsonl \
+    --experiment_name chai-epoch_10_base \
+    --train_file /root/cleaned_session-02_complex_quality_30.jsonl \
     --max_seq_length 4096 \
-    --per_device_train_batch_size 4 \
+    --per_device_train_batch_size 2 \
     --learning_rate 1e-3
