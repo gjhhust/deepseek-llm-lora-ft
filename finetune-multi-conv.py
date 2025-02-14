@@ -14,7 +14,7 @@ from transformers import AutoTokenizer,AutoModelForCausalLM,DataCollatorForSeq2S
 import torch
 
 # 加载模型
-model_path = "./model/deepseek-ai/deepseek-llm-7b-chat"
+model_path = "/root/model/deepseek-ai/deepseek-llm-7b-base"
 model_kwargs = {
         "torch_dtype": torch.float16,
         "use_cache": True,
@@ -28,12 +28,13 @@ tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
 print("模型：",model)
 print("分词器：",tokenizer)
 
+# import pdb;pdb.set_trace()
 ### 2、处理数据集
 import pandas as pd
 from datasets import Dataset
 
-data_path = "./data/medical_multi_data.json"
-data = pd.read_json(data_path)
+data_path = "/root/cleaned_session-02_complex_quality.jsonl"
+data = pd.read_json(data_path, lines=True)
 train_ds = Dataset.from_pandas(data)
 print(train_ds)
 

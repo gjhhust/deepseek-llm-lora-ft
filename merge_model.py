@@ -57,11 +57,11 @@ def merge_lora_to_base_model(model_name_or_path,adapter_name_or_path,save_path):
 
 
 if __name__ == '__main__':
-    model_name_or_path = 'model/deepseek-ai/deepseek-llm-7b-chat'  # 原模型地址
-    adapter_name_or_path = '/home/lixinyu/nlp/yi-6b/output/deepseek-mutil-test/'  # 微调后模型的保存地址
-    save_path = 'output/deepseek-multi-1-test'
+    model_name_or_path = '/root/model/deepseek-ai/deepseek-llm-7b-base'  # 原模型地址
+    # adapter_name_or_path = '/root/deepseek-llm-7B-chat-lora-ft/train/openmind-epoch-10/'  # 微调后模型的保存地址
+    save_path = '/root/deepseek-llm-7B-chat-lora-ft/output/deepseek-multi-1-test'
 
-    root_dir = '/home/public/TrainerShareFolder/lxy/deepseek/config-test-output'
+    root_dir = '/root/deepseek-llm-7B-chat-lora-ft/train'
     # 遍历 root_dir 下面的每个子文件夹
     for folder_name in os.listdir(root_dir):
         folder_path = os.path.join(root_dir, folder_name)

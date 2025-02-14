@@ -153,6 +153,23 @@ def deepseek_model_inference(model_path: str, prompt: str):
     messages = [
         {"role": "user", "content": prompt}
     ]
+    
+    deepseek_template = (
+        "{{ bos_token }}"  # 添加前缀的bos_token
+        "{% if messages[0]['role'] == 'system' %}"  # 处理系统消息
+        "{{ messages[0]['content'] }}\n\n"  # 系统消息格式
+        "{% set messages = messages[1:] %}"  # 移除已处理的系统消息
+        "{% endif %}"
+        "{% for message in messages %}"  # 遍历剩余消息
+        "{% if message['role'] == 'user' %}"
+        "User: {{ message['content'] }}\n\nAssistant:"  # 用户消息格式
+        "{% else %}"
+        "{{ message['content'] }}"  # 助理消息直接拼接内容
+        "{% endif %}"
+        "{% endfor %}"
+    )
+    tokenizer.chat_template = deepseek_template
+    
     input_tensor = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt")
     outputs = model.generate(input_tensor.to(model.device), max_new_tokens=2048)
 
@@ -160,7 +177,7 @@ def deepseek_model_inference(model_path: str, prompt: str):
     return result
 
 # 多轮对话推理
-def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_history: list):
+def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_history: list, max_new_tokens=2048):
     """
     chat_history:[{"role": "user", "content": ……},{"role": "assistant", "content": ……}]
     """
@@ -172,9 +189,26 @@ def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_his
     messages = chat_history.copy()
     messages.append({"role": "user", "content": prompt})
     chat_history.append({"role": "user", "content": prompt})
+    
+    deepseek_template = (
+        "{{ bos_token }}"  # 添加前缀的bos_token
+        "{% if messages[0]['role'] == 'system' %}"  # 处理系统消息
+        "{{ messages[0]['content'] }}\n\n"  # 系统消息格式
+        "{% set messages = messages[1:] %}"  # 移除已处理的系统消息
+        "{% endif %}"
+        "{% for message in messages %}"  # 遍历剩余消息
+        "{% if message['role'] == 'user' %}"
+        "User: {{ message['content'] }}\n\nAssistant:"  # 用户消息格式
+        "{% else %}"
+        "{{ message['content'] }}"  # 助理消息直接拼接内容
+        "{% endif %}"
+        "{% endfor %}"
+    )
+    
+    tokenizer.chat_template = deepseek_template
 
     input_tensor = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt")
-    outputs = model.generate(input_tensor.to(model.device), max_new_tokens=2048)
+    outputs = model.generate(input_tensor.to(model.device), max_new_tokens=max_new_tokens)
 
     result = tokenizer.decode(outputs[0][input_tensor.shape[1]:], skip_special_tokens=True)
     chat_history.append({"role": "assistant", "content": result})
@@ -182,13 +216,15 @@ def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_his
 
 
 if __name__ == "__main__":
-    model_path = "./model/deepseek-ai/deepseek-llm-7b-chat"
-    merge_path = "/home/public/TrainerShareFolder/lxy/deepseek/config-test-output/epoch-3/merge_model"
+    model_path = "/root/model/deepseek-ai/deepseek-llm-7b-base"
+    merge_path = "/root/deepseek-llm-7B-chat-lora-ft/train/openmind-epoch-10/merge_model"
 
     inputs = """我最近很焦虑，我被要求参加一个节目，但是我没有任何才艺，我虽然拒绝但是也不想为难班委就答应了，现在我总觉得我会搞砸，怎么办啊？"""
     prompt = f"""现在你是一个心理专家，我有一些心理问题，请你用专业的知识帮我解决。\n{inputs}"""
     # print(deepseek_model_inference(merge_path,inputs))
-
+    
+    
+    print("*****************************merge_model response******************************************************")
     chat_history=[]
     result, chat_history=deepseek_multi_conversation_inference(merge_path,inputs,chat_history)
     print(result)
@@ -202,7 +238,17 @@ if __name__ == "__main__":
     print(result)
 
 
+    # print("\n\n\n*****************************orige response******************************************************")
+    # chat_history=[]
+    # result, chat_history=deepseek_multi_conversation_inference(model_path,inputs,chat_history)
+    # print(result)
 
+    # inputs = """可是我是个社恐，做不到怎么办？"""
+    # result, chat_history = deepseek_multi_conversation_inference(model_path, inputs, chat_history)
+    # print(result)
 
+    # inputs = """我在数学方面总是比他落后很多，我尝试了很多方法提高，但还是觉得力不从心。"""
+    # result, chat_history = deepseek_multi_conversation_inference(model_path, inputs, chat_history)
+    # print(result)
 
 
