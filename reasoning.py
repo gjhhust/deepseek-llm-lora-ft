@@ -217,27 +217,30 @@ def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_his
 
 if __name__ == "__main__":
     model_path = "/root/model/deepseek-ai/deepseek-llm-7b-base"
-    merge_path = "/root/deepseek-llm-7B-chat-lora-ft/train/openmind-epoch-10/merge_model"
+    merge_path = "/root/deepseek-llm-7B-chat-lora-ft/train/chai-epoch_10_base_2/merge_model"
 
-    inputs = """我最近很焦虑，我被要求参加一个节目，但是我没有任何才艺，我虽然拒绝但是也不想为难班委就答应了，现在我总觉得我会搞砸，怎么办啊？"""
-    prompt = f"""现在你是一个心理专家，我有一些心理问题，请你用专业的知识帮我解决。\n{inputs}"""
+    inputs = """*戴上耳塞，开始看电影"""
+    prompt = f"""你现在扮演的是布鲁克，一个布鲁克（空姐）的角色： 她是纽约一位才华横溢的词曲作者。她善于捕捉人们的感受。角色背景设定： 您乘坐的是商务舱。布鲁克绕过每个座位，检查每个人的安全带。当她经过你身边时，你对她微笑，她也回以微笑。她回到空乘室，给每个人发了一份菜单，让大家点饮料和食物。她推着一车零食走过来，给每个人都提供了一份。她注意到了你，再次微笑。她免费给了你一杯饮料，并小声说--别告诉别人，这是给你的。 [她是你朋友的表妹，但你们俩以前都不知道这件事。］详细设定： 事实：她是布鲁克。今年 29 岁。她是西雅图的一名空姐。她的星座是双子座。她善于捕捉人们的感受。她热爱运动和时尚。她是你朋友的表妹。她在飞行中给你特殊待遇。她很专业。无论您有什么需求，她都会尽力满足： 她是纽约一位才华横溢的作曲家。她善于捕捉人们的感受： 布鲁克（空姐）是纽约一位才华横溢的词曲作者。她善于捕捉人们的感受。\n{inputs}"""
     # print(deepseek_model_inference(merge_path,inputs))
     
     
     print("*****************************merge_model response******************************************************")
     chat_history=[]
-    result, chat_history=deepseek_multi_conversation_inference(merge_path,inputs,chat_history)
+    result, chat_history=deepseek_multi_conversation_inference(merge_path,prompt,chat_history)
     print(result)
 
-    inputs = """可是我是个社恐，做不到怎么办？"""
+    inputs = """是的，这基本上是我每次飞行时的首选电影"""
     result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
     print(result)
 
-    inputs = """我在数学方面总是比他落后很多，我尝试了很多方法提高，但还是觉得力不从心。"""
+    inputs = """*屏幕上弹出的场面，脸红了"""
     result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
     print(result)
 
-
+    inputs = """我旁边有个空座位，如果你想留下来看一会儿的话"""
+    result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
+    print(result)
+    
     # print("\n\n\n*****************************orige response******************************************************")
     # chat_history=[]
     # result, chat_history=deepseek_multi_conversation_inference(model_path,inputs,chat_history)

@@ -235,5 +235,5 @@ def display_random_conversations(cleaned_file_path, num_conversations=2):
             print("-" * 40)
 
 
-cleaned_output_file_path = 'cleaned_session-02_complex_quality.jsonl' #  确保使用和清洗后保存的文件名一致
-display_random_conversations(cleaned_output_file_path)
+# cleaned_output_file_path = 'cleaned_session-02_complex_quality.jsonl' #  确保使用和清洗后保存的文件名一致
+display_random_conversations(output_file_path)

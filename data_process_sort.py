@@ -34,9 +34,9 @@ def filter_top50_by_avg_quality(input_file, output_file, rate=0.5):
         
     print(f"\n筛选完成！前{rate*100}%高质量对话已保存至: {output_file}")
 
-cleaned_output_path = 'cleaned_session-02_complex_quality.jsonl'
-filtered_output_path = 'cleaned_session-02_complex_quality_30.jsonl' # 新输出文件路径
+cleaned_output_path = '/root/cleaned_session-02_complex_quality.jsonl'
+filtered_output_path = '/root/cleaned_session-02_complex_quality_0_01.jsonl' # 新输出文件路径
 
 # 过滤前50%数据
-filter_top50_by_avg_quality(cleaned_output_path, filtered_output_path,rate=0.3) #取前30%的数据训练
+filter_top50_by_avg_quality(cleaned_output_path, filtered_output_path,rate=0.01) #取前30%的数据训练
 

@@ -185,7 +185,7 @@ def load_model(args, train_dataset, data_collator):
     use_bfloat16 = torch.cuda.is_bf16_supported()  # 检查设备是否支持 bf16
     # 配置训练参数
     train_args = TrainingArguments(
-        output_dir=args.output_dir,
+        output_dir=os.path.join(args.output_dir, args.experiment_name),
         per_device_train_batch_size=args.per_device_train_batch_size,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         logging_steps=args.logging_steps,
@@ -361,7 +361,7 @@ def main():
     trainer = load_model(args, train_dataset, data_collator)
     trainer.train()
     # 训练
-    final_save_path = join(args.output_dir)
+    final_save_path = join(os.path.join(args.output_dir, args.experiment_name))
     trainer.save_model(final_save_path)
 
 
