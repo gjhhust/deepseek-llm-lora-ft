@@ -214,6 +214,43 @@ def deepseek_multi_conversation_inference(model_path: str, prompt: str, chat_his
     chat_history.append({"role": "assistant", "content": result})
     return result,chat_history
 
+# 多轮对话推理
+def deepseek_multi_conversation_inference_orige(model_path: str, prompt: str, chat_history: list, max_new_tokens=2048):
+    """
+    chat_history:[{"role": "user", "content": ……},{"role": "assistant", "content": ……}]
+    """
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16, device_map="auto")
+    model.generation_config = GenerationConfig.from_pretrained(model_path)
+    model.generation_config.pad_token_id = model.generation_config.eos_token_id
+
+    messages = chat_history.copy()
+    messages.append({"role": "user", "content": prompt})
+    chat_history.append({"role": "user", "content": prompt})
+    
+    deepseek_template = (
+        "{{ bos_token }}"  # 添加前缀的bos_token
+        "{% if messages[0]['role'] == 'system' %}"  # 处理系统消息
+        "{{ messages[0]['content'] }}\n\n"  # 系统消息格式
+        "{% set messages = messages[1:] %}"  # 移除已处理的系统消息
+        "{% endif %}"
+        "{% for message in messages %}"  # 遍历剩余消息
+        "{% if message['role'] == 'user' %}"
+        "User: {{ message['content'] }}\n\nAssistant:"  # 用户消息格式
+        "{% else %}"
+        "{{ message['content'] }}"  # 助理消息直接拼接内容
+        "{% endif %}"
+        "{% endfor %}"
+    )
+    
+    tokenizer.chat_template = deepseek_template
+
+    input_tensor = tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt")
+    outputs = model.generate(input_tensor.to(model.device), max_new_tokens=max_new_tokens)
+
+    result = tokenizer.decode(outputs[0][input_tensor.shape[1]:], skip_special_tokens=True)
+    chat_history.append({"role": "assistant", "content": result})
+    return result,chat_history
 
 if __name__ == "__main__":
     model_path = "/root/model/deepseek-ai/deepseek-llm-7b-base"
@@ -226,19 +263,19 @@ if __name__ == "__main__":
     
     print("*****************************merge_model response******************************************************")
     chat_history=[]
-    result, chat_history=deepseek_multi_conversation_inference(merge_path,prompt,chat_history)
+    result, chat_history=deepseek_multi_conversation_inference(model_path,prompt,chat_history)
     print(result)
 
     inputs = """是的，这基本上是我每次飞行时的首选电影"""
-    result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
+    result, chat_history = deepseek_multi_conversation_inference(model_path, inputs, chat_history)
     print(result)
 
     inputs = """*屏幕上弹出的场面，脸红了"""
-    result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
+    result, chat_history = deepseek_multi_conversation_inference(model_path, inputs, chat_history)
     print(result)
 
     inputs = """我旁边有个空座位，如果你想留下来看一会儿的话"""
-    result, chat_history = deepseek_multi_conversation_inference(merge_path, inputs, chat_history)
+    result, chat_history = deepseek_multi_conversation_inference(model_path, inputs, chat_history)
     print(result)
     
     # print("\n\n\n*****************************orige response******************************************************")
