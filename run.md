@@ -15,3 +15,5 @@ python finetune-multi-args.py \
     --max_seq_length 2048 \
     --per_device_train_batch_size 4 \
     --learning_rate 1e-3
+
+python3 -m fastchat.serve.cli --model-path /root/model/deepseek-ai/deepseek-llm-7b-base --conv-template one_shot
